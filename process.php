@@ -73,9 +73,6 @@ try {
     var_dump($e->getMessage());
     $response_slice = "no correlation established, you are the only and last lifeform in the universe... scary I know";
 };    
-
-// $response = ('numberOfPage' => "$numberOfPages",
-//             'movie_results' => "$response_slice");
     
 echo json_encode(array($numberOfPages,$response_slice));
 

@@ -39,7 +39,7 @@ function completeMovieList(){
         <div class="darkPoney" id="darkPoney">
         <nav aria-label="Page navigation">
             <ul class="pagination justify-content-center" id='navigation'>
-                <li class="page-item disabled">
+                <!-- <li class="page-item disabled">
                     <button class="page-link" tabindex="-1">Previous</button>
                 </li>
                 <li class="page-item"><button class="page-link" >1</button></li>
@@ -47,7 +47,7 @@ function completeMovieList(){
                 <li class="page-item"><button class="page-link" >3</button></li>
                 <li class="page-item">
                     <button class="page-link" >Next</button>
-                </li>
+                </li> -->
             </ul>
         </nav>
             <ul id="movie_search_results" class="list-group list_results"> 

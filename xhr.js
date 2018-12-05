@@ -65,7 +65,7 @@ const fetchData = (search, page) => {
 
 
 // creates pagination buttons corresponding to number of pages
-const displayPagination = (pageNb) => {
+const displayPagination = (pageNb, currPage) => {
     // clears pagination at each new search
     while (nav.firstChild) {
         nav.removeChild(nav.firstChild);
@@ -81,8 +81,17 @@ const displayPagination = (pageNb) => {
         page_link.className = 'page-link';
         page_link.textContent = i;
         page_link.id = 'btn' + i;
+        console.log(page_link.id);
         pagination_item.appendChild(page_link);
-        page_link.addEventListener('click', displayAccordingContent());
+        page_link.addEventListener('click', () =>{
+            displayAccordingContent(page_link);
+        });
+
+        // after creating pagination, we add active class to currentPage button
+        if (currPage == i){
+            let activeButton = document.getElementById('btn'+ i);
+            activeButton.classList.add('active');
+        }
     } 
     
     // if there's more than one page of results we create two more navigation elements : the previous and next buttons
@@ -116,14 +125,14 @@ const displayItemsinList = (data) => {
 };
 
 // display content according to the id of clicked button 
-const displayAccordingContent = () => {
-    console.log(page_link.id);
+const displayAccordingContent = (btn) => {
+    console.log("coucou je suis le bouton " + btn.id + " je viens d'être clické, cool non? ");
     //afficher : 
     // - de indice 0 à 24 pour page 1
     // - de indice 25 à 49 pour page 2
     // - de indice 50 à 74 pour page 3 ... etc.
-    // pour ça on a besoin d'actualiser la valeur de targat page et de lancer une nouvelle requête avec ce paramètre
-    // et garder la parmètre search existant
+    // pour ça on a besoin d'actualiser la valeur de targetPage et de lancer une nouvelle requête avec ce paramètre
+    // et garder la paramètre search existant
 };
 
 // sets an event listener on the button 'search'
