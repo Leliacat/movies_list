@@ -8,6 +8,7 @@ let url_base = "process.php?"; // String representing the URL to send the reques
 let url_complement_search = "search=";
 let url_complement_page = "&page=";
 
+let newSearch = false;
 let inputSearchValue; // value of search input (entered by the user)
 let currentPage = 1; // page on which we are, by default it is set to 1
 let targetPage; // page we want to go to
@@ -15,6 +16,7 @@ let pageNumber;
 let pagination_buttons_tab = [];
 let xhr; // name of XML HTTP request
 
+/********************************************************** XML HTTP REQUEST **********************************************************/
 // create a new request
 try {
     xhr = new XMLHttpRequest();
@@ -22,7 +24,7 @@ try {
     alert('Damned! Things went wrong, task failed successfully!');
 }
 
-
+/********************************************************** FETCH DATA **********************************************************/
 // lauch the request and collect data from the response
 const fetchData = (search, page) => {
 
@@ -40,7 +42,7 @@ const fetchData = (search, page) => {
                 let response = JSON.parse(xhr.responseText);
                 // display pagination
                 pageNumber = response[0];
-                if (pagination_buttons_tab.length <= 0 || pagination_buttons_tab == undefined){
+                if (pagination_buttons_tab.length <= 0 || pagination_buttons_tab == undefined || newSearch){
                     displayPagination(pageNumber, currentPage);
                 }
                 // display movies on screen
@@ -67,17 +69,18 @@ const fetchData = (search, page) => {
     }
 };
 
-
+/********************************************************** DISPLAY PAGINATION **********************************************************/
 // creates pagination buttons corresponding to number of pages
 const displayPagination = (pageNb, currPage) => {
     // clears pagination at each new search
+    pagination_buttons_tab = [];
     while (nav.firstChild) {
         nav.removeChild(nav.firstChild);
     }   
+    
     // add a nav button for each page of results
     for (i = 1; i <= pageNb; i++){
-        // model of HTML we want to create for each page : 
-        // <li class="page-item"><a class="page-link" href="#">1</a></li>
+        // model of HTML we want to create for each page :  <li class="page-item"><a class="page-link" href="#">1</a></li>
         let pagination_item = document.createElement('li');
         pagination_item.className ='page-item';
         nav.appendChild(pagination_item);
@@ -100,7 +103,6 @@ const displayPagination = (pageNb, currPage) => {
             activeButton.classList.add('btn_active');
         }
     } 
-    
     // if there's more than one page of results we create two more navigation elements : the previous and next buttons
     if (pageNb > 1){
         // make the pagination item and give them classes
@@ -109,13 +111,7 @@ const displayPagination = (pageNb, currPage) => {
 
         pagination_item_previous.className ='page-item previous';
         pagination_item_next.className ='page-item next';
-
-        // disable previous button when on first page, and disable button next when on last page
-        if (currentPage == 1){
-            pagination_item_previous.classList.add ='disabled';
-        }else if(currentPage == pageNb){
-            pagination_item_next.classList.add ='disabled';
-        }
+        
         // create the buttons
         let btn_previous = document.createElement('button');
         let btn_next = document.createElement('button');
@@ -127,14 +123,17 @@ const displayPagination = (pageNb, currPage) => {
         pagination_buttons_tab.push(btn_next);
     
         btn_previous.textContent= 'previous';
+        btn_previous.id = 'btn_previous';
         btn_next.textContent = 'next';
+        btn_next.id = 'btn_next';
 
         pagination_item_previous.appendChild(btn_previous);
         pagination_item_next.appendChild(btn_next);
 
         nav.insertBefore(pagination_item_previous, nav.firstChild);
         nav.lastChild.after(pagination_item_next);
-
+        
+        //add eventlisteners to buttons previous and next
         btn_previous.addEventListener('click', () =>{
             displayAccordingContent(btn_previous);
         });
@@ -144,6 +143,7 @@ const displayPagination = (pageNb, currPage) => {
     }
 };
 
+/********************************************************** DISPLAY ITEMS LIST **********************************************************/
 // displays movies results into the DOM
 const displayItemsinList = (data) => {
     data.forEach(element => {
@@ -155,26 +155,29 @@ const displayItemsinList = (data) => {
     }); 
 };
 
+/********************************************************** DISPLAY CONTENT ACCORDING TO PAGINATION **********************************************************/
 // display content according to the id of clicked button 
 const displayAccordingContent = (btn) => {
     console.log("coucou je suis le bouton " + btn.id + " je viens d'être clické, cool non? ");
     console.log(pagination_buttons_tab);
+
     // remove class btn_active from other buttons
     for(let i = 0; i < pagination_buttons_tab.length; i++){
         if( pagination_buttons_tab[i].classList.contains('btn_active')){
             pagination_buttons_tab[i].classList.remove('btn_active');
         }
     }
-
     // handle buttons callbacks
-    if (btn.textContent == 'previous' && !btn.classList.contains('disabled')){
-        targetPage = currentPage - 1;
-        
-    }else if (btn.textContent == 'next' && !btn.classList.contains('disabled')){
-        targetPage = currentPage + 1;
-
+    if (btn.textContent == 'previous'){
+        if(currentPage !== 1){
+            targetPage = currentPage - 1;
+        }
+    }else if (btn.textContent == 'next'){
+        if(currentPage !== pageNumber){
+            targetPage = currentPage + 1;
+        }
     }else{
-        // ajouter class btn_active to the button that has just been clicked
+        // add class btn_active to the button that has just been clicked
         btn.classList.add('btn_active');
         // btn.style.color = 'purple';
         console.log(" moi " + btn.id + " j'ai les classes suivantes: " + btn.classList);
@@ -192,7 +195,6 @@ const displayAccordingContent = (btn) => {
             }
         }
     }
-
     // clear research results before launching new request
     while (results_list.firstChild) {
         results_list.removeChild(results_list.firstChild);
@@ -201,9 +203,11 @@ const displayAccordingContent = (btn) => {
     fetchData(inputSearchValue, targetPage); 
 };
 
+
+/********************************************************** BUTTON SEARCH EVENT LISTENER **********************************************************/
 // sets an event listener on the button 'search'
 btnSearch.addEventListener("click", () => {
-
+    newSearch = true;
     // gets input value into a string and removes any special characters
     inputSearchValue = search_field.value.replace(/[^a-zA-Z ]/g, "");
     console.log(inputSearchValue);

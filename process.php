@@ -42,7 +42,7 @@ $response_allResults = $request_all -> fetchAll();
 $total = count($response_allResults); // we must make a first request to know the total count of results
 // echo $total." est le total";
 
-/********************************************************* 'PAGE' PARAMETER **************************************************************/
+/*********************************************************** 'PAGE' PARAMETER **************************************************************/
 
 // according to the number of results, the number of pages is calculated
 $numberOfPages = ceil($total / $resultsPerPage);
