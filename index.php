@@ -3,9 +3,10 @@ require('./sql_database.php');
 function completeMovieList(){
     $resultat = Database::connect()->query('SELECT * FROM movies');
     while($row = $resultat->fetch(PDO::FETCH_ASSOC)){
-        echo '<li class="list-group-item">
-                    Titre : ' . $row["movie_title"] . ' - Genre : ' . $row["movie_genre"] . 
-            '</li>';
+        echo "<li class='list-group-item'>
+                <h5>" . $row["movie_title"] . "</h5>
+                <span>" . $row["movie_genre"] . "</span>
+              </li>";
         }
     }
 ?>
@@ -36,6 +37,19 @@ function completeMovieList(){
         </div>
 
         <div class="darkPoney" id="darkPoney">
+        <nav aria-label="Page navigation">
+            <ul class="pagination justify-content-center" id='navigation'>
+                <li class="page-item disabled">
+                    <button class="page-link" tabindex="-1">Previous</button>
+                </li>
+                <li class="page-item"><button class="page-link" >1</button></li>
+                <li class="page-item"><button class="page-link" >2</button></li>
+                <li class="page-item"><button class="page-link" >3</button></li>
+                <li class="page-item">
+                    <button class="page-link" >Next</button>
+                </li>
+            </ul>
+        </nav>
             <ul id="movie_search_results" class="list-group list_results"> 
                 <?php completeMovieList()?>
             </ul>

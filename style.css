@@ -29,7 +29,7 @@ body{
 	height: 100vh;
 	background-image: linear-gradient(to right, rgba(0,0,0,0.15), rgba(127, 255, 212, .05), rgba(0,0,0,0.1)),
 					 url(./img/film_strip2.png);
-	background-size: cover;
+	background-size: contain;
 	/* background-repeat: no-repeat; */
 	background-blend-mode: multiply;
 }
@@ -76,12 +76,14 @@ a{
 .list-group-item{
 	background-color: rgba(255, 255, 255, .85);
 }
-
+.page-item {
+	
+}
 
 
 /*************************LOADER****************************/
 .lds-roller {
-	display: inline-block;
+	/* display: inline-block; */
 	position: relative;
 	margin: 0 20rem;
 	width: 64px;
