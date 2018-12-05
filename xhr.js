@@ -203,7 +203,7 @@ const displayAccordingContent = (btn) => {
     while (results_list.firstChild) {
         results_list.removeChild(results_list.firstChild);
     }  
-    //launch a request to get appropriate results
+    // launch a request to get appropriate results
     fetchData(inputSearchValue, targetPage); 
 };
 
