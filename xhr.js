@@ -38,22 +38,25 @@ const fetchData = (search, page) => {
                 // if the expected response is received, the loader is not displayed
                 loader.style.display = "none";
                 // get the response content and parse it into JSON format
-                // console.log( 'telle est la réponse: ' + xhr.responseText.toString());
                 let response = JSON.parse(xhr.responseText);
-                // display pagination
                 pageNumber = response[0];
-                if (pagination_buttons_tab.length <= 0 || pagination_buttons_tab == undefined || newSearch){
-                    displayPagination(pageNumber, currentPage);
-                }
-                // display movies on screen
                 let mesFilms = response[1];
-                displayItemsinList(mesFilms);
-                // console.log(mesFilms.length);
+                
                 // check if the response actually contains some movie 
                 if (mesFilms.length <= 0 ){
                     // if the response is empty, a message is displayed to inform the user
                     console.log( "euh... on n'a rien trouvé, bizarre comme recherche: " + xhr.responseText);
                     results_list.innerHTML = '<h5>Sorry but we have not found anything like that... not judging but maybe try something more... conventional... XD </h5>'; 
+                    // remove pagination if there was some
+                    while (nav.firstChild) { nav.removeChild(nav.firstChild); }   
+                }else {
+                    // display movies on screen
+                    displayItemsinList(mesFilms);
+                    // display pagination
+                    if (pagination_buttons_tab.length <= 0 || pagination_buttons_tab == undefined || newSearch){
+                    console.log("nouvelle recherche: " + newSearch);
+                    displayPagination(pageNumber, currentPage);
+                    }
                 }
                 
             } else if (xhr.readyState < 4) {
@@ -97,12 +100,13 @@ const displayPagination = (pageNb, currPage) => {
             displayAccordingContent(page_link);
         });
 
-        // after creating pagination, we add active class to currentPage button
+        //after creating pagination, we add active class to currentPage button
         if (currPage == i){
             let activeButton = document.getElementById('btn'+ i);
             activeButton.classList.add('btn_active');
         }
     } 
+
     // if there's more than one page of results we create two more navigation elements : the previous and next buttons
     if (pageNb > 1){
         // make the pagination item and give them classes
@@ -115,21 +119,21 @@ const displayPagination = (pageNb, currPage) => {
         // create the buttons
         let btn_previous = document.createElement('button');
         let btn_next = document.createElement('button');
-        
+        // add class to buttons
         btn_previous.className = 'page-link';
         btn_next.className = 'page-link';
         // add the buttons to an array 
         pagination_buttons_tab.push(btn_previous);
         pagination_buttons_tab.push(btn_next);
-    
+        // define buttons textContent and id
         btn_previous.textContent= 'previous';
         btn_previous.id = 'btn_previous';
         btn_next.textContent = 'next';
         btn_next.id = 'btn_next';
-
+        // append buttons to the pagination_item
         pagination_item_previous.appendChild(btn_previous);
         pagination_item_next.appendChild(btn_next);
-
+        // place pagination_items in the DOM
         nav.insertBefore(pagination_item_previous, nav.firstChild);
         nav.lastChild.after(pagination_item_next);
         
@@ -179,12 +183,11 @@ const displayAccordingContent = (btn) => {
     }else{
         // add class btn_active to the button that has just been clicked
         btn.classList.add('btn_active');
-        // btn.style.color = 'purple';
         console.log(" moi " + btn.id + " j'ai les classes suivantes: " + btn.classList);
         targetPage = btn.textContent;
     }
 
-    console.log(targetPage);
+    console.log("targetPAGE is " + targetPage);
     currentPage = targetPage;
 
     // if the button clicked is next or previous, add class btn_active to button of currentPage
@@ -195,6 +198,7 @@ const displayAccordingContent = (btn) => {
             }
         }
     }
+    
     // clear research results before launching new request
     while (results_list.firstChild) {
         results_list.removeChild(results_list.firstChild);
@@ -208,9 +212,9 @@ const displayAccordingContent = (btn) => {
 // sets an event listener on the button 'search'
 btnSearch.addEventListener("click", () => {
     newSearch = true;
+    currentPage = 1;
     // gets input value into a string and removes any special characters
     inputSearchValue = search_field.value.replace(/[^a-zA-Z ]/g, "");
-    console.log(inputSearchValue);
 
     // clear research results before launching new request
     while (results_list.firstChild) {
