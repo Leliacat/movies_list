@@ -11,6 +11,8 @@ let url_complement_page = "&page=";
 let inputSearchValue; // value of search input (entered by the user)
 let currentPage = 1; // page on which we are, by default it is set to 1
 let targetPage; // page we want to go to
+let pageNumber;
+let pagination_buttons_tab = [];
 let xhr; // name of XML HTTP request
 
 // create a new request
@@ -34,15 +36,17 @@ const fetchData = (search, page) => {
                 // if the expected response is received, the loader is not displayed
                 loader.style.display = "none";
                 // get the response content and parse it into JSON format
-                console.log( 'telle est la réponse: ' + xhr.responseText.toString());
+                // console.log( 'telle est la réponse: ' + xhr.responseText.toString());
                 let response = JSON.parse(xhr.responseText);
                 // display pagination
-                let pageNumber = response[0];
-                displayPagination(pageNumber, currentPage);
+                pageNumber = response[0];
+                if (pagination_buttons_tab.length <= 0 || pagination_buttons_tab == undefined){
+                    displayPagination(pageNumber, currentPage);
+                }
                 // display movies on screen
                 let mesFilms = response[1];
                 displayItemsinList(mesFilms);
-                console.log(mesFilms.length);
+                // console.log(mesFilms.length);
                 // check if the response actually contains some movie 
                 if (mesFilms.length <= 0 ){
                     // if the response is empty, a message is displayed to inform the user
@@ -77,12 +81,15 @@ const displayPagination = (pageNb, currPage) => {
         let pagination_item = document.createElement('li');
         pagination_item.className ='page-item';
         nav.appendChild(pagination_item);
+
         let page_link = document.createElement('button');
         page_link.className = 'page-link';
         page_link.textContent = i;
         page_link.id = 'btn' + i;
-        console.log(page_link.id);
+
         pagination_item.appendChild(page_link);
+        pagination_buttons_tab.push(page_link);
+
         page_link.addEventListener('click', () =>{
             displayAccordingContent(page_link);
         });
@@ -90,33 +97,57 @@ const displayPagination = (pageNb, currPage) => {
         // after creating pagination, we add active class to currentPage button
         if (currPage == i){
             let activeButton = document.getElementById('btn'+ i);
-            activeButton.classList.add('active');
+            activeButton.classList.add('btn_active');
         }
     } 
     
     // if there's more than one page of results we create two more navigation elements : the previous and next buttons
     if (pageNb > 1){
+        // make the pagination item and give them classes
         let pagination_item_previous = document.createElement('li');
-        pagination_item_previous.className ='page-item previous disabled';
         let pagination_item_next = document.createElement('li');
+
+        pagination_item_previous.className ='page-item previous';
         pagination_item_next.className ='page-item next';
+
+        // disable previous button when on first page, and disable button next when on last page
+        if (currentPage == 1){
+            pagination_item_previous.classList.add ='disabled';
+        }else if(currentPage == pageNb){
+            pagination_item_next.classList.add ='disabled';
+        }
+        // create the buttons
         let btn_previous = document.createElement('button');
-        btn_previous.className = 'page-link';
-        btn_previous.textContent= 'previous';
-        pagination_item_previous.appendChild(btn_previous);
         let btn_next = document.createElement('button');
+        
+        btn_previous.className = 'page-link';
         btn_next.className = 'page-link';
+        // add the buttons to an array 
+        pagination_buttons_tab.push(btn_previous);
+        pagination_buttons_tab.push(btn_next);
+    
+        btn_previous.textContent= 'previous';
         btn_next.textContent = 'next';
+
+        pagination_item_previous.appendChild(btn_previous);
         pagination_item_next.appendChild(btn_next);
+
         nav.insertBefore(pagination_item_previous, nav.firstChild);
         nav.lastChild.after(pagination_item_next);
+
+        btn_previous.addEventListener('click', () =>{
+            displayAccordingContent(btn_previous);
+        });
+        btn_next.addEventListener('click', () =>{
+            displayAccordingContent(btn_next);
+        });
     }
 };
 
 // displays movies results into the DOM
 const displayItemsinList = (data) => {
     data.forEach(element => {
-        console.log(element.movie_title + " --- " + element.movie_genre);
+        // console.log(element.movie_title + " --- " + element.movie_genre);
         let list_item = document.createElement('li');
         list_item.classList.add('list-group-item');
         list_item.innerHTML = "<h5> " + element.movie_title + " </h5><span> " + element.movie_genre + " </span>";
@@ -127,12 +158,47 @@ const displayItemsinList = (data) => {
 // display content according to the id of clicked button 
 const displayAccordingContent = (btn) => {
     console.log("coucou je suis le bouton " + btn.id + " je viens d'être clické, cool non? ");
-    //afficher : 
-    // - de indice 0 à 24 pour page 1
-    // - de indice 25 à 49 pour page 2
-    // - de indice 50 à 74 pour page 3 ... etc.
-    // pour ça on a besoin d'actualiser la valeur de targetPage et de lancer une nouvelle requête avec ce paramètre
-    // et garder la paramètre search existant
+    console.log(pagination_buttons_tab);
+    // remove class btn_active from other buttons
+    for(let i = 0; i < pagination_buttons_tab.length; i++){
+        if( pagination_buttons_tab[i].classList.contains('btn_active')){
+            pagination_buttons_tab[i].classList.remove('btn_active');
+        }
+    }
+
+    // handle buttons callbacks
+    if (btn.textContent == 'previous' && !btn.classList.contains('disabled')){
+        targetPage = currentPage - 1;
+        
+    }else if (btn.textContent == 'next' && !btn.classList.contains('disabled')){
+        targetPage = currentPage + 1;
+
+    }else{
+        // ajouter class btn_active to the button that has just been clicked
+        btn.classList.add('btn_active');
+        // btn.style.color = 'purple';
+        console.log(" moi " + btn.id + " j'ai les classes suivantes: " + btn.classList);
+        targetPage = btn.textContent;
+    }
+
+    console.log(targetPage);
+    currentPage = targetPage;
+
+    // if the button clicked is next or previous, add class btn_active to button of currentPage
+    if(btn.textContent == 'previous' || btn.textContent == 'next'){
+        for(let i = 0; i < pagination_buttons_tab.length; i++){
+            if( pagination_buttons_tab[i].textContent == currentPage){
+                pagination_buttons_tab[i].classList.add('btn_active');
+            }
+        }
+    }
+
+    // clear research results before launching new request
+    while (results_list.firstChild) {
+        results_list.removeChild(results_list.firstChild);
+    }  
+    //launch a request to get appropriate results
+    fetchData(inputSearchValue, targetPage); 
 };
 
 // sets an event listener on the button 'search'
@@ -158,6 +224,7 @@ btnSearch.addEventListener("click", () => {
 
     //launch a new request
     fetchData(inputSearchValue, targetPage); 
+    displayPagination(pageNumber, currentPage);
 });
 
 // TODO put a listener on enter to launch a request

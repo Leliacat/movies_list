@@ -25,10 +25,10 @@ $response_slice; // slice of 25 results
 // and adapt the request content accordingly
 if(isset($search) && !empty($search)){ 
     // $request = "SELECT "  . $selectedColumn .  " FROM " . $table . " WHERE "  . $columnValue .  " like ?";
-    $request = "SELECT $selectedColumn FROM $table WHERE $columnValue like ? ORDER BY movie_id ASC";
+    $request = "SELECT $selectedColumn FROM $table WHERE $columnValue like ? ORDER BY movie_title ASC";
     $request_count = "SELECT COUNT($selectedColumn) AS total FROM $table WHERE $columnValue like ?";
 } else {
-    $request = 'SELECT * FROM movies ORDER BY movie_id ASC'; 
+    $request = 'SELECT * FROM movies ORDER BY movie_title ASC'; 
     $request_count = "SELECT COUNT(*) AS total FROM $table";
 };
 

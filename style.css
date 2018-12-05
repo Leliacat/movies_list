@@ -60,30 +60,28 @@ a{
 }
 
 .btn_search{
- font-weight: 700
+ font-weight: 700;
 }
 
 .loader{
     
 }
-
 .list_results{
 	margin: 2rem auto;
 	max-width: 80%;
 	overflow:scroll;
 }
-
 .list-group-item{
 	background-color: rgba(255, 255, 255, .85);
 }
-.page-item {
-	
+.btn_active{
+	background-color: aquamarine !important;
 }
 
 
 /*************************LOADER****************************/
 .lds-roller {
-	/* display: inline-block; */
+	display: none;
 	position: relative;
 	margin: 0 20rem;
 	width: 64px;

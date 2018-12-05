@@ -1,7 +1,7 @@
 <?php
 require('./sql_database.php');
 function completeMovieList(){
-    $resultat = Database::connect()->query('SELECT * FROM movies');
+    $resultat = Database::connect()->query('SELECT * FROM movies ORDER BY movie_title ASC');
     while($row = $resultat->fetch(PDO::FETCH_ASSOC)){
         echo "<li class='list-group-item'>
                 <h5>" . $row["movie_title"] . "</h5>
